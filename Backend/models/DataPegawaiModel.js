@@ -35,6 +35,13 @@ const DataPegawai = db.define('data_pegawai', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
+    designation: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        validate: {
+            isIn: [['Mason', 'Electrician', 'Plumber', 'Supervisor', 'Helper']]
+        }
+    },
     tanggal_masuk: {
         type: DataTypes.STRING,
         allowNull: false

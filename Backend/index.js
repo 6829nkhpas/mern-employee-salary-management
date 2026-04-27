@@ -3,6 +3,7 @@ import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import db from './config/Database.js';
+import { DataTypes } from 'sequelize';
 
 import SequelizeStore from 'connect-session-sequelize';
 import FileUpload from 'express-fileupload';
@@ -51,6 +52,16 @@ app.use('/api/overtime', OvertimeRoute);
 const initializeApplication = async () => {
     try {
         await db.authenticate();
+        const queryInterface = db.getQueryInterface();
+        const dataPegawaiTable = await queryInterface.describeTable('data_pegawai');
+
+        if (!dataPegawaiTable.designation) {
+            await queryInterface.addColumn('data_pegawai', 'designation', {
+                type: DataTypes.STRING(50),
+                allowNull: true
+            });
+        }
+
         await Overtime.sync();
         await store.sync();
 
