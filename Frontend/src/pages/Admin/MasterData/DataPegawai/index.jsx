@@ -280,76 +280,78 @@ const DataPegawai = () => {
                     </div>
                 </div>
 
-                <div className="max-w-full overflow-x-auto py-4">
-                    <table className="w-full table-auto">
-                        <thead>
-                            <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                                <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">No</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">Photo</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">NIK</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Nama Pegawai</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Jenis Kelamin</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Designation</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Tanggal Masuk</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Status</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Hak Akses</th>
-                                <th className="py-4 px-4 font-medium text-black dark:text-white">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredDataPegawai.slice(startIndex, endIndex).map((data, index) => {
-                                return (
-                                    <tr key={data.id}>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white text-center">{startIndex + index + 1}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark">
-                                            <div className="h-12.5 w-15">
-                                                <div className="rounded-full overflow-hidden">
-                                                    <img src={`http://localhost:5000/images/${data.photo}`} alt="Photo Profil" />
+                <div className="w-full overflow-x-auto py-4">
+                    <div className="min-w-full">
+                        <table className="min-w-max w-full table-auto">
+                            <thead>
+                                <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">No</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">Photo</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white xl:pl-11">NIK</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Nama Pegawai</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Jenis Kelamin</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Designation</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Tanggal Masuk</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Status</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Hak Akses</th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredDataPegawai.slice(startIndex, endIndex).map((data, index) => {
+                                    return (
+                                        <tr key={data.id}>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white text-center">{startIndex + index + 1}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark">
+                                                <div className="h-12.5 w-15">
+                                                    <div className="rounded-full overflow-hidden">
+                                                        <img src={`http://localhost:5000/images/${data.photo}`} alt="Photo Profil" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white text-center">{data.nik}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.nama_pegawai}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.jenis_kelamin}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.designation || '-'}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.tanggal_masuk}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.status}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{data.hak_akses}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <div className="flex items-center space-x-3.5">
-                                                <Link
-                                                    to={`/data-pegawai/form-data-pegawai/edit/${data.id}`}
-                                                    className="hover:text-black">
-                                                    <FaRegEdit className="text-primary text-xl hover:text-black dark:hover:text-white" />
-                                                </Link>
-                                                <button
-                                                    onClick={() => onDeletePegawai(data.id)}
-                                                    className="hover:text-black">
-                                                    <BsTrash3 className="text-danger text-xl hover:text-black dark:hover:text-white" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white text-center">{data.nik}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.nama_pegawai}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.jenis_kelamin}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.designation || '-'}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.tanggal_masuk}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.status}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{data.hak_akses}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <div className="flex items-center space-x-3.5">
+                                                    <Link
+                                                        to={`/data-pegawai/form-data-pegawai/edit/${data.id}`}
+                                                        className="hover:text-black">
+                                                        <FaRegEdit className="text-primary text-xl hover:text-black dark:hover:text-white" />
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => onDeletePegawai(data.id)}
+                                                        className="hover:text-black">
+                                                        <BsTrash3 className="text-danger text-xl hover:text-black dark:hover:text-white" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div className="flex justify-between items-center mt-4 flex-col md:flex-row md:justify-between">
