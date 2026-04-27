@@ -6,11 +6,25 @@ import { FaRegEdit, FaPlus } from 'react-icons/fa';
 import { BsTrash3 } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { deleteDataPegawai, getDataPegawai, getMe } from '../../../../config/redux/action';
+import { deleteDataPegawai, getDataJabatan, getDataPegawai, getMe } from '../../../../config/redux/action';
 import { BiSearch } from 'react-icons/bi';
-import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { MdDownload, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdOutlineKeyboardArrowDown } from 'react-icons/md';
 
 const ITEMS_PER_PAGE = 4;
+
+const escapeCsvValue = (value) => {
+    const stringValue = String(value ?? '-').replace(/"/g, '""');
+    return `"${stringValue}"`;
+};
+
+const formatSalary = (value) => {
+    if (value === undefined || value === null || value === '') {
+        return '-';
+    }
+
+    const numericValue = Number(value);
+    return Number.isNaN(numericValue) ? value : `Rp. ${numericValue.toLocaleString('id-ID')}`;
+};
 
 const DataPegawai = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -20,11 +34,7 @@ const DataPegawai = () => {
     const navigate = useNavigate();
     const { isError, user } = useSelector((state) => state.auth);
     const { dataPegawai } = useSelector((state) => state.dataPegawai);
-
-    const totalPages = Math.ceil(dataPegawai.length / ITEMS_PER_PAGE);
-
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const { dataJabatan } = useSelector((state) => state.dataJabatan);
 
     const filteredDataPegawai = dataPegawai.filter((pegawai) => {
         const { nama_pegawai, status } = pegawai;
@@ -35,6 +45,11 @@ const DataPegawai = () => {
             (filterStatus === '' || status.toLowerCase() === statusKeyword)
         );
     });
+
+    const totalPages = Math.max(1, Math.ceil(filteredDataPegawai.length / ITEMS_PER_PAGE));
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
 
     const goToPrevPage = () => {
         if (currentPage > 1) {
@@ -54,6 +69,62 @@ const DataPegawai = () => {
 
     const handleFilterStatus = (event) => {
         setFilterStatus(event.target.value);
+    };
+
+    const handleDownloadCsv = () => {
+        if (filteredDataPegawai.length === 0) {
+            Swal.fire({
+                title: 'Tidak ada data',
+                text: 'Tidak ada data pegawai untuk diunduh.',
+                icon: 'info',
+                confirmButtonText: 'OK',
+            });
+            return;
+        }
+
+        const departmentField = filteredDataPegawai.find((pegawai) =>
+            pegawai.department || pegawai.departemen || pegawai.nama_departemen
+        );
+        const hasDepartment = Boolean(departmentField);
+
+        const headers = ['Name', 'Designation', ...(hasDepartment ? ['Department'] : []), 'Salary'];
+        const salaryByJabatan = dataJabatan.reduce((accumulator, jabatan) => {
+            accumulator[jabatan.nama_jabatan] = jabatan.gaji_pokok;
+            return accumulator;
+        }, {});
+
+        const rows = filteredDataPegawai.map((pegawai) => {
+            const department = pegawai.department || pegawai.departemen || pegawai.nama_departemen || '-';
+            const salary = formatSalary(salaryByJabatan[pegawai.jabatan]);
+
+            return [
+                pegawai.nama_pegawai,
+                pegawai.designation || '-',
+                ...(hasDepartment ? [department] : []),
+                salary,
+            ];
+        });
+
+        const csvContent = [headers, ...rows]
+            .map((row) => row.map(escapeCsvValue).join(','))
+            .join('\n');
+
+        const today = new Date();
+        const fileDate = [
+            today.getFullYear(),
+            String(today.getMonth() + 1).padStart(2, '0'),
+            String(today.getDate()).padStart(2, '0'),
+        ].join('-');
+        const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = downloadUrl;
+        link.download = `employee-list-${fileDate}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
     };
 
     const onDeletePegawai = (id) => {
@@ -87,8 +158,22 @@ const DataPegawai = () => {
     }, [dispatch, startIndex, endIndex]);
 
     useEffect(() => {
+        dispatch(getDataJabatan());
+    }, [dispatch]);
+
+    useEffect(() => {
         dispatch(getMe());
     }, [dispatch]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchKeyword, filterStatus]);
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
 
     useEffect(() => {
         if (isError) {
@@ -147,14 +232,22 @@ const DataPegawai = () => {
     return (
         <Layout>
             <Breadcrumb pageName="Data Pegawai" />
-            <Link to="/data-pegawai/form-data-pegawai/add">
-                <ButtonOne>
-                    <span>Tambah Pegawai</span>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <Link to="/data-pegawai/form-data-pegawai/add">
+                    <ButtonOne>
+                        <span>Tambah Pegawai</span>
+                        <span>
+                            <FaPlus />
+                        </span>
+                    </ButtonOne>
+                </Link>
+                <ButtonOne className="bg-primary" onClick={handleDownloadCsv}>
+                    <span>Download CSV</span>
                     <span>
-                        <FaPlus />
+                        <MdDownload />
                     </span>
                 </ButtonOne>
-            </Link>
+            </div>
             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 mt-6">
                 <div className="flex justify-between items-center mt-4 flex-col md:flex-row md:justify-between">
                     <div className="relative flex-1 md:mr-2 mb-4 md:mb-0">
