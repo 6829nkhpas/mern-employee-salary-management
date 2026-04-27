@@ -2,6 +2,20 @@ import DataJabatan from "../models/DataJabatanModel.js";
 import DataPegawai from "../models/DataPegawaiModel.js";
 import { Op } from "sequelize";
 
+const validateGajiPokok = (gaji_pokok) => {
+    if (gaji_pokok === undefined || gaji_pokok === null || String(gaji_pokok).trim() === "") {
+        return null;
+    }
+
+    const parsedGajiPokok = Number(gaji_pokok);
+
+    if (!Number.isFinite(parsedGajiPokok) || parsedGajiPokok < 0) {
+        return "Gaji pokok tidak boleh kurang dari 0";
+    }
+
+    return null;
+};
+
 // menampilkan semua data jabatan
 export const getDataJabatan = async (req, res) => {
     try {
@@ -57,6 +71,11 @@ export const createDataJabatan = async (req, res) => {
         id_jabatan, nama_jabatan, gaji_pokok, tj_transport, uang_makan
     } = req.body;
     try {
+        const salaryValidationError = validateGajiPokok(gaji_pokok);
+        if (salaryValidationError) {
+            return res.status(400).json({ msg: salaryValidationError });
+        }
+
         if (req.hak_akses === "admin") {
             await DataJabatan.create({
                 id_jabatan: id_jabatan,
@@ -94,6 +113,11 @@ export const updateDataJabatan = async (req, res) => {
         });
         if (!jabatan) return res.status(404).json({ msg: "Data tidak ditemukan" });
         const { nama_jabatan, gaji_pokok, tj_transport, uang_makan } = req.body;
+        const salaryValidationError = validateGajiPokok(gaji_pokok);
+        if (salaryValidationError) {
+            return res.status(400).json({ msg: salaryValidationError });
+        }
+
         if (req.hak_akses === "admin") {
             await DataJabatan.update({
                 nama_jabatan, gaji_pokok, tj_transport, uang_makan

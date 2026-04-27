@@ -14,6 +14,9 @@ const FormAddDataJabatan = () => {
         uangMakan: '',
     });
 
+    const isNegativeSalaryValue = (value) =>
+        value !== '' && String(value).trim().startsWith('-');
+
     const {
         namaJabatan,
         gajiPokok,
@@ -27,6 +30,17 @@ const FormAddDataJabatan = () => {
 
     const submitDataJabatan = (e) => {
         e.preventDefault();
+
+        if (isNegativeSalaryValue(gajiPokok) || Number(gajiPokok) < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Gaji pokok tidak boleh kurang dari 0.',
+                confirmButtonText: 'Ok',
+            });
+            return;
+        }
+
         const newFormData = new FormData();
         newFormData.append('nama_jabatan', namaJabatan);
         newFormData.append('gaji_pokok', gajiPokok);
@@ -71,6 +85,10 @@ const FormAddDataJabatan = () => {
     };
 
     const handleChange = (e) => {
+        if (e.target.name === 'gajiPokok' && isNegativeSalaryValue(e.target.value)) {
+            return;
+        }
+
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -130,6 +148,7 @@ const FormAddDataJabatan = () => {
                                             name='gajiPokok'
                                             value={gajiPokok}
                                             onChange={handleChange}
+                                            min='0'
                                             required
                                             placeholder='Masukkan gaji pokok'
                                             className='w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary'

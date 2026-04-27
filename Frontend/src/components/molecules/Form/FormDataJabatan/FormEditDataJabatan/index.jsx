@@ -20,6 +20,9 @@ const FormEditDataJabatan = () => {
     
     const { isError, user } = useSelector((state) => state.auth);
 
+    const isNegativeSalaryValue = (value) =>
+        value !== '' && String(value).trim().startsWith('-');
+
     useEffect(() => {
         const getUserById = async () => {
             try {
@@ -39,6 +42,17 @@ const FormEditDataJabatan = () => {
 
     const updateDataJabatan = async (e) => {
         e.preventDefault();
+
+        if (isNegativeSalaryValue(gajiPokok) || Number(gajiPokok) < 0) {
+            setMsg('Gaji pokok tidak boleh kurang dari 0.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Gaji pokok tidak boleh kurang dari 0.'
+            });
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('nama_jabatan', namaJabatan);
@@ -72,6 +86,14 @@ const FormEditDataJabatan = () => {
     useEffect(() => {
         dispatch(getMe());
     }, [dispatch]);
+
+    const handleGajiPokokChange = (e) => {
+        if (isNegativeSalaryValue(e.target.value)) {
+            return;
+        }
+
+        setGajiPokok(e.target.value);
+    };
 
     useEffect(() => {
         if (isError) {
@@ -121,7 +143,8 @@ const FormEditDataJabatan = () => {
                                             id='gajiPokok'
                                             name='gajiPokok'
                                             value={gajiPokok}
-                                            onChange={(e) => setGajiPokok(e.target.value)}
+                                            onChange={handleGajiPokokChange}
+                                            min='0'
                                             required
                                             placeholder='Masukkan gaji pokok'
                                             className='w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary'
