@@ -6,6 +6,7 @@ import DataPegawai from './MasterData/DataPegawai';
 import UbahPasswordAdmin from './PengaturanAdmin/UbahPasswordAdmin';
 import DataKehadiran from './Transaksi/DataKehadiran';
 import DataGaji from './Transaksi/DataGaji';
+import DataOvertime from './Transaksi/DataOvertime';
 import DataPotongan from './Transaksi/DataPotongan';
 
 export {
@@ -17,5 +18,6 @@ export {
     UbahPasswordAdmin,
     DataKehadiran,
     DataGaji,
+    DataOvertime,
     DataPotongan
 };

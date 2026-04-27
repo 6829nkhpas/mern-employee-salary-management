@@ -26,6 +26,7 @@ import {
   DataJabatan,
   DataKehadiran,
   DataGaji,
+  DataOvertime,
   LaporanGaji,
   LaporanAbsensi,
   SlipGaji,
@@ -88,6 +89,10 @@ const AppRoutes = () => {
       <Route
         path='/data-potongan'
         element={<DataPotongan />}
+      />
+      <Route
+        path='/data-overtime'
+        element={<DataOvertime />}
       />
       <Route
         path='/data-potongan/form-data-potongan/add'
