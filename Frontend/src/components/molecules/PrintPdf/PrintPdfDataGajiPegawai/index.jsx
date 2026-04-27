@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import LogoPt from "../../../../Assets/images/logo/logo-dark.svg";
 import LogoSipeka from "../../../../Assets/images/logo/logo-sipeka.png";
 import { useReactToPrint } from "react-to-print";
@@ -10,6 +10,12 @@ import {
 } from "../../../../config/redux/action";
 import { ButtonOne, ButtonTwo } from "../../../atoms";
 
+const printDateFormatter = new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+});
+
 const PrintPdfDataGajiPegawai = () => {
     const componentRef = useRef();
     const dispatch = useDispatch();
@@ -18,12 +24,10 @@ const PrintPdfDataGajiPegawai = () => {
     const searchParams = new URLSearchParams(location.search);
     const month = searchParams.get("month");
     const year = searchParams.get("year");
-    const [bulan, setBulan] = useState("");
-    const [tahun, setTahun] = useState("");
-
     const { isError, user } = useSelector((state) => state.auth);
     const { nama_pegawai } = useSelector((state) => state.auth.user) || {};
     const dataGajiPegawai = useSelector((state) => state.dataGajiPegawaiPrint.dataGajiPegawaiPrint);
+    const printedDate = printDateFormatter.format(new Date());
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -50,18 +54,6 @@ const PrintPdfDataGajiPegawai = () => {
             handlePrint();
         }
     }, [isError, user, navigate, handlePrint]);
-
-    useEffect(() => {
-        const today = new Date();
-        const monthNames = [
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-        ];
-        const currentMonth = monthNames[today.getMonth()];
-        const currentYear = today.getFullYear();
-        setBulan(currentMonth);
-        setTahun(currentYear);
-    }, []);
 
     return (
         <>
@@ -214,7 +206,7 @@ const PrintPdfDataGajiPegawai = () => {
                                     <span>{nama_pegawai}</span>
                                 </div>
                                 <div className="font-medium text-black dark:text-white">
-                                    <span className="text-right">Karawang, {`${new Date().getDate()} ${bulan} ${tahun}`}</span>
+                                    <span className="text-right">Karawang, {printedDate}</span>
                                     <br />
                                     <span>Finance</span>
                                     <br />
@@ -223,7 +215,7 @@ const PrintPdfDataGajiPegawai = () => {
                                 </div>
                             </div>
                             <div className="italic text-black dark:text-white mt-30">
-                                Dicetak Pada : {`${new Date().getDate()} ${bulan} ${tahun}`}
+                                Dicetak Pada : {printedDate}
                             </div>
                         </div>
                     );
